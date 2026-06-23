@@ -2,7 +2,7 @@
 
 An **agent skill** that turns an AI coding assistant into a personal tutor. Give it a topic and it builds a bespoke, multi-lesson course — calibrated to what you already know — then teaches it lesson by lesson with quizzes, exams, and hands-on assignments, tracking your progress so you can stop and resume anytime.
 
-It's built on the portable [`SKILL.md`](https://code.claude.com/docs/en/skills) format (a Markdown instruction file plus a few plain bash/Python scripts), so it runs in **any agent that supports skills** — [Claude Code](https://code.claude.com/docs/en/overview) is one, but nothing here is Claude-specific. The workflow is the instructions; the scripts are ordinary tools any harness can run.
+It follows the open **Agent Skills** standard — a portable `SKILL.md` instruction file plus a few plain bash/Python scripts — so it runs in **any agent that supports skills**. The workflow lives in the instructions; the scripts are ordinary command-line tools any harness can run.
 
 Courses are written as Markdown in your working directory and can optionally be exported to **HTML or PDF** through a resilient render toolkit that never hard-fails, whatever tooling you have installed.
 
@@ -16,26 +16,18 @@ Courses are written as Markdown in your working directory and can optionally be 
 - **Progress tracking** — everything is saved to `progress.json`. Close the session and come back later; the skill resumes from the exact sub-step you left off at.
 - **Optional export** — render any lesson (and the final summary) to HTML and/or PDF. See [The render toolkit](#the-render-toolkit).
 
-## Installation
-
-Clone the skill into the directory your agent loads skills from. The exact path depends on your tool — for **Claude Code** that's `~/.claude/skills/`:
-
-```sh
-git clone https://github.com/mawmawmaw/teach-me.git ~/.claude/skills/teach-me
-```
-
-For another harness, clone it anywhere and point your agent at it (or symlink it into that tool's skills directory):
+Clone the skill, then make it visible to your agent by placing or symlinking it into that agent's skills directory (consult your agent's docs for where that is):
 
 ```sh
 git clone https://github.com/mawmawmaw/teach-me.git
-ln -s "$PWD/teach-me" /path/to/your-agent/skills/teach-me
+ln -s "$PWD/teach-me" <your-agents-skills-dir>/teach-me
 ```
 
 Your agent discovers it on the next session. The skill sets `disable-model-invocation: true` in its frontmatter, so harnesses that honor that flag only run it when you ask for it explicitly.
 
 ## Usage
 
-Start your agent in the directory where you want the course saved, then ask for the skill explicitly — invoke it by name (e.g. `/teach-me` in Claude Code) or just tell the agent what you want to learn, e.g. *"teach me Clojure macros."* It will:
+Start your agent in the directory where you want the course saved, then ask for the skill explicitly — invoke it by name (`teach-me`) or just tell the agent what you want to learn, e.g. *"teach me Clojure macros."* It will:
 
 1. Ask your course language, topic, and learning goals.
 2. Run the baseline assessment and ask which export formats you want.
@@ -84,7 +76,7 @@ The toolkit probes for what's installed — including whether a **Python 3** int
 
 ## Requirements
 
-- **An agent that supports the `SKILL.md` skill format** and can run bash/Python scripts (e.g. Claude Code).
+- **An agent that supports the Agent Skills (`SKILL.md`) format** and can run bash/Python scripts.
 - **Nothing else is strictly required** — Markdown always works, and HTML works with just Python 3 (or even without it, via agent-authored HTML).
 - **Optional, for richer export:** [`pandoc`](https://pandoc.org), and a PDF engine such as [`weasyprint`](https://weasyprint.org), a TeX distribution (`xelatex`/`tectonic`), or [`typst`](https://typst.app). The skill will offer to install one for you if you choose PDF and none is found.
 
